@@ -111,9 +111,11 @@ def draw_system_info(draw):
 	return draw
 
 def draw_date(draw):
-	draw.text((11,8),str(time.strftime('%Y/%m/%d')),font=font)
-	draw.text((17,16), str(time.strftime('%H:%M:%S')), font=font)
-	draw.text((23,24), str(time.strftime('%a')), font=big_font)
+	t = time
+	draw.text((11,8), t.strftime('%Y/%m/%d'), font=font)
+	draw.text((17,16), t.strftime('%H:%M:%S'), font=font)
+	draw.text((23,24), t.strftime('%a'), font=big_font)
+	del t
 	return draw
 
 class bgdraw:
@@ -176,7 +178,6 @@ def main():
 	while 1:
 		input_state = GPIO.input(BOT)
 		if input_state == 0 and linput_state != input_state:
-			print('putton')
 			linput_state = input_state
 			d.terminate()
 			t.join()
