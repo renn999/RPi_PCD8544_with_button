@@ -76,7 +76,11 @@ disp = LCD.PCD8544(DC, RST, SCLK, DIN, CS)
 # Initialize library.
 disp.begin(contrast=52, bias=4)
 
-
+# Plugin function list
+plugin_list=[
+	"draw_system_info",
+	"draw_date"
+]
 
 def get_cpu_temperature():
 	process = Popen(['vcgencmd', 'measure_temp'], stdout=PIPE)
@@ -125,20 +129,21 @@ class bgdraw:
 	def terminate(self):
 		self._running = False
 
-	BUTTON_PRESS = 1
+	BUTTON_PRESS = 0
 
 	def run(self):
-
 		while 1 and self._running:
 			# Draw a white filled box to clear the image.
 			image = Image.new('1', (LCD.LCDWIDTH, LCD.LCDHEIGHT))
 			draw = ImageDraw.Draw(image)
 			draw.rectangle((0,0,LCD.LCDWIDTH,LCD.LCDHEIGHT), outline=255, fill=255)
 			# Write some text.
-			if (self.BUTTON_PRESS % 2):
-				draw = draw_system_info(draw)
-			else:
-				draw = draw_date(draw)
+			p = globals().copy()
+			p.update(locals())
+			plugin = p.get(plugin_list[self.BUTTON_PRESS % len(plugin_list)])
+			if not plugin:
+				raise NotImplementedError("plugin not implemented")
+			draw = plugin(draw)
 	
 			# Display image.
 			disp.image(image)
@@ -173,7 +178,7 @@ def main():
 	d = bgdraw()
 	t = Thread(target=d.run)
 	t.start()
-	BTP = 0
+	BTP = 1
 
 	while 1:
 		input_state = GPIO.input(BOT)
@@ -185,7 +190,7 @@ def main():
 			d.BUTTON_PRESS = BTP
 			t = Thread(target=d.run)
 			t.start()
-			BTP = ( BTP + 1 ) % 2
+			BTP = ( BTP + 1 ) % len(plugin_list)
 		else:
 			if (input_state == 0):
 				linput_state = 0
