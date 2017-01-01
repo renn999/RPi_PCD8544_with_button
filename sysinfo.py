@@ -79,6 +79,7 @@ disp.begin(contrast=52, bias=4)
 # Plugin function list
 plugin_list=[
 	"draw_system_info",
+	"draw_disk_usage",
 	"draw_date"
 ]
 
@@ -121,6 +122,21 @@ def draw_date(draw):
 	draw.text((23,24), t.strftime('%a'), font=big_font)
 	del t
 	return draw
+
+def draw_disk_usage(draw):
+	j=0
+	for i in psutil.disk_partitions(all=False):
+		if j > 3:
+			break
+		if i.device == '/dev/mmcblk0p1':
+			continue
+		j = j + 1
+		k = psutil.disk_usage(i.mountpoint)
+		draw.text((0,0 + ( j - 1 ) * 16 ), str(i.device) , font=font)
+		draw.rectangle((0, 9 + ( j - 1 ) * 16, LCD.LCDWIDTH - 1, 14 + ( j - 1 ) * 16), outline=0, fill=255)
+		draw.rectangle((2, 11 + ( j - 1 ) * 16, int(( LCD.LCDWIDTH - 6 ) * k.percent / 100 + 3 ), 12 + ( j - 1 ) * 16), outline=0, fill=0)
+	return draw
+
 
 class bgdraw:
 	def __init__(self):
