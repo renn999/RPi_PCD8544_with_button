@@ -134,7 +134,14 @@ def draw_disk_usage(draw):
 		k = psutil.disk_usage(i.mountpoint)
 		draw.text((0,0 + ( j - 1 ) * 16 ), str(i.device) , font=font)
 		draw.rectangle((0, 9 + ( j - 1 ) * 16, LCD.LCDWIDTH - 1, 14 + ( j - 1 ) * 16), outline=0, fill=255)
-		draw.rectangle((2, 11 + ( j - 1 ) * 16, int(( LCD.LCDWIDTH - 6 ) * k.percent / 100 + 3 ), 12 + ( j - 1 ) * 16), outline=0, fill=0)
+		l = ( LCD.LCDWIDTH - 4 ) * k.percent / 100
+		if int(l) == 0:
+			if l:
+				draw.rectangle((2, 11 + ( j - 1 ) * 16, 2 , 12 + ( j - 1 ) * 16), outline=0, fill=0)
+			else:
+				pass
+		else:	
+			draw.rectangle((2, 11 + ( j - 1 ) * 16, int( l + 1 ), 12 + ( j - 1 ) * 16), outline=0, fill=0)
 	return draw
 
 
