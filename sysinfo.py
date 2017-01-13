@@ -206,7 +206,6 @@ def main():
 	while 1:
 		input_state = GPIO.input(BOT)
 		if input_state == 0 and linput_state != input_state:
-			linput_state = input_state
 			d.terminate()
 			t.join()
 			d = bgdraw()
@@ -214,11 +213,8 @@ def main():
 			t = Thread(target=d.run)
 			t.start()
 			BTP = ( BTP + 1 ) % len(plugin_list)
-		else:
-			if (input_state == 0):
-				linput_state = 0
-			else:
-				linput_state = 1
+
+		linput_state = input_state
 		time.sleep(0.1)
 
 if __name__ == '__main__':
